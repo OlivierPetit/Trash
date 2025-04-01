@@ -27,6 +27,7 @@ en disposant les lignes de droite à gauche et en affichant les cartes de cœur 
 <br>
 <label for="birthDate">Date de naissance :</label>
 <input type="date" id="birthDate">
+<span id="personalCardDisplay" style="margin-left: 1em; font-weight: bold;"></span>
 <br>
 <div id="output"></div>
 
@@ -80,17 +81,18 @@ function getNaturalReadingArray(quad) {
 
 // Nouvelle fonction pour obtenir l'ordre d'affichage effectif (de droite à gauche, haut en bas)
 function getDisplayedOrder(quad) {
-  // La couronne correspond aux 3 dernières cartes (indices 49 à 51) en inversant l'ordre
-  let crown = quad.slice(49, 52).reverse();
-  // Le bloc : 7 lignes de 7 cartes (indices 0 à 48), chaque ligne inversée
-  let block = [];
+  const result = [];
+  // Ligne 0 : couronne (3 cartes centrées)
+  const crownRow = ["", "", quad[51], quad[50], quad[49], "", ""];
+  result.push(crownRow);
+  // Lignes 1 à 7 : bloc de 49 cartes (7 lignes de 7 cartes)
   let index = 0;
   for (let r = 0; r < 7; r++) {
-    let rowCards = quad.slice(index, index + 7).reverse();
-    block = block.concat(rowCards);
+    const row = quad.slice(index, index + 7).reverse();
+    result.push(row);
     index += 7;
   }
-  return crown.concat(block);
+  return result;
 }
 
 // Applique une transformation unique (de quadrature à quadrature suivante)
@@ -142,6 +144,7 @@ function showQuadrature() {
   const quad = getQuadrature(order);
   const displayedOrder = getDisplayedOrder(quad);
   let highlightCard = [];
+  document.getElementById("personalCardDisplay").textContent = "";
   const birthValue = document.getElementById("birthDate").value;
   if (birthValue) {
     let birthDate = new Date(birthValue);
@@ -152,6 +155,7 @@ function showQuadrature() {
     if (personalNum > 52) personalNum = 52;
     // On récupère la carte personnelle dans l'ordre naturel
     const personalCard = NATURAL_ORDER[personalNum - 1];
+    document.getElementById("personalCardDisplay").textContent = `Carte personnelle : ${personalCard}`;
     // On cherche sa position dans l'ordre d'affichage
     const personalIndex = quad.indexOf(personalCard);
     for (let i = 0; i < 8; i++) {
@@ -176,33 +180,13 @@ function showQuadrature() {
     return td;
   }
 
-  // --- Begin Crown Modification ---
-  let row = document.createElement("tr");
-  // Ajout de 2 cellules vides à gauche pour centrer sur 7 colonnes
-  row.appendChild(createCell(""));
-  row.appendChild(createCell(""));
-  // La couronne correspond aux 3 premières cartes de displayedOrder (indices 0 à 2)
-  const crown = displayedOrder.slice(0, 3);
-  for (let i = 0; i < crown.length; i++) {
-    row.appendChild(createCell(crown[i], i));
-  }
-  // Ajout de 2 cellules vides à droite
-  row.appendChild(createCell(""));
-  row.appendChild(createCell(""));
-  table.appendChild(row);
-  // --- End Crown Modification ---
-
-  // --- Begin Block Modification ---
-  let displayIndex = 3;
-  for (let r = 0; r < 7; r++) {
-    row = document.createElement("tr");
+  for (let r = 0; r < 8; r++) {
+    const row = document.createElement("tr");
     for (let c = 0; c < 7; c++) {
-      row.appendChild(createCell(displayedOrder[displayIndex]));
-      displayIndex++;
+      row.appendChild(createCell(displayedOrder[r][c]));
     }
     table.appendChild(row);
   }
-  // --- End Block Modification ---
 
   output.appendChild(table);
 }

@@ -1,0 +1,7 @@
+@@
+-<label for="birthDate">Date de naissance :</label>
+-<input type="date" id="birthDate">
+-<br>
++<label for="birthDate">Date de naissance :</label>
++<input type="date" id="birthDate"><span id="birthCard"></span>
++<br>
