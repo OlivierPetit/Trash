@@ -4,13 +4,42 @@
   <meta charset="UTF-8">
   <title>Affichage des Quadratures</title>
   <style>
-    body { font-family: sans-serif; }
-    table { border-collapse: collapse; margin-top: 1rem; }
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .order-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    table {
+      border-collapse: collapse;
+      margin-top: 1rem;
+      max-width: 100%;
+    }
     td {
       border: 1px solid #333;
       padding: 0.5rem 0.8rem;
       text-align: center;
       min-width: 3em;
+    }
+    @media (max-width: 600px) {
+      td {
+        padding: 0.3rem 0.4rem;
+        font-size: 0.8rem;
+      }
     }
   </style>
 </head>
@@ -22,12 +51,19 @@ Description: Ce code JavaScript affiche la quadrature (naturelle ou manifestée)
 en disposant les lignes de droite à gauche et en affichant les cartes de cœur et de carreau en rouge.
 -->
 
-<input type="number" id="inputOrder" value="-1" min="-1" max="89">
-<button onclick="showQuadrature()">Afficher la quadrature</button>
-<br>
-<label for="birthDate">Date de naissance :</label>
-<input type="date" id="birthDate">
-<span id="personalCardDisplay" style="margin-left: 1em; font-weight: bold;"></span>
+<div class="controls">
+  <div class="order-controls">
+    <button onclick="changeOrder(-1)">-</button>
+    <input type="number" id="inputOrder" value="-1" min="-1" max="89">
+    <button onclick="changeOrder(1)">+</button>
+    <button onclick="showQuadrature()">Afficher la quadrature</button>
+  </div>
+  <div>
+    <label for="birthDate">Date de naissance :</label>
+    <input type="date" id="birthDate">
+  </div>
+  <span id="personalCardDisplay" style="font-weight: bold;"></span>
+</div>
 <br>
 <div id="output"></div>
 
@@ -189,6 +225,14 @@ function showQuadrature() {
   }
 
   output.appendChild(table);
+}
+
+function changeOrder(delta) {
+  const input = document.getElementById("inputOrder");
+  let val = parseInt(input.value, 10);
+  val = isNaN(val) ? -1 : val + delta;
+  val = Math.max(-1, Math.min(89, val));
+  input.value = val;
 }
 </script>
 </body>
